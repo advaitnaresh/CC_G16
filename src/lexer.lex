@@ -15,7 +15,7 @@ extern int yyerror(std::string msg);
 <COMMENT>[^*]*  { /* Removing Multiline Comments */ }
 <COMMENT>\*\/    { BEGIN(INITIAL); }
 
-"//".* { printf("Bro its a comment"); }
+"//".* { /*This is a single line comment */ }
 "+"       { return TPLUS; }
 "-"       { return TDASH; }
 "*"       { return TSTAR; }
