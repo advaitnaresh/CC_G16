@@ -1,2 +1,3 @@
-#def lwin
-dbg lwin*5;
+#def alwin 50
+#undef alwin
+dbg alwin*5;
