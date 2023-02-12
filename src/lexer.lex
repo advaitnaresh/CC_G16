@@ -2,15 +2,29 @@
 
 %{
 #include "parser.hh"
+
 #include <string>
+#define MAX_SYMBOL_LENGTH 100
+char symbol_name[MAX_SYMBOL_LENGTH + 1];
 
 extern int yyerror(std::string msg);
 
 %}
 
 %x MULTICOMMENT
+%option noyywrap
 
 %%
+"#def" {  
+    int i = 0;
+  char c;
+  while ((c = getchar()) != EOF && c != '\n' && c != ' ' && i < MAX_SYMBOL_LENGTH) {
+    symbol_name[i++] = c;
+  }
+  symbol_name[i] = '\0';
+  printf("Symbol: %s\n", symbol_name);
+}
+
 \/\*                     { BEGIN(MULTICOMMENT); }
 <MULTICOMMENT>[^*]*      { /* Removing Multiline Comments */ }
 <MULTICOMMENT>\*\/       { BEGIN(INITIAL); }
