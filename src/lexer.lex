@@ -15,7 +15,7 @@ int comment=0;
 <COMMENT>[^*]*  {}
 <COMMENT>\*\/    { comment = 0; BEGIN(INITIAL); }
 
-"//"[a-zA-Z0-9' ';$&+,:;=?@#|/'<>.^*()%!-]* { printf("Bro its a comment"); }
+"//".* { printf("Bro its a comment"); }
 "+"       { return TPLUS; }
 "-"       { return TDASH; }
 "*"       { return TSTAR; }
