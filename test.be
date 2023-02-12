@@ -1,3 +1,3 @@
-#def alwin 50
-#undef alwin
-dbg alwin*5;
+#def alwin 50 + 1
+#def ho 94+1
+dbg (ho)/(alwin);
