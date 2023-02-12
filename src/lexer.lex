@@ -1,12 +1,13 @@
 %option noyywrap
 
 %{
-#include "parser.hh"
+    #include "parser.hh"
+    #include <stdio.h>
+    #include <map>
+    #include <string.h>
+    std::map<std::string,std::string> defines;
 
-#include <string>
-#define MAX_SYMBOL_LENGTH 100
-char symbol_name[MAX_SYMBOL_LENGTH + 1];
-
+    int defCheck=0;
 extern int yyerror(std::string msg);
 
 %}
@@ -15,20 +16,12 @@ extern int yyerror(std::string msg);
 %option noyywrap
 
 %%
-"#def" {  
-    int i = 0;
-  char c;
-  while ((c = getchar()) != EOF && c != '\n' && c != ' ' && i < MAX_SYMBOL_LENGTH) {
-    symbol_name[i++] = c;
-  }
-  symbol_name[i] = '\0';
-  printf("Symbol: %s\n", symbol_name);
-}
 
 \/\*                     { BEGIN(MULTICOMMENT); }
 <MULTICOMMENT>[^*]*      { /* Removing Multiline Comments */ }
 <MULTICOMMENT>\*\/       { BEGIN(INITIAL); }
 
+"#def"    { defCheck =1; return TLET;}
 "//".* { /*This is a single line comment */ }
 "+"       { return TPLUS; }
 "-"       { return TDASH; }
@@ -41,8 +34,8 @@ extern int yyerror(std::string msg);
 "dbg"     { return TDBG; }
 "let"     { return TLET; }
 [0-9]+    { yylval.lexeme = std::string(yytext); return TINT_LIT; }
-[a-zA-Z]+ { yylval.lexeme = std::string(yytext); return TIDENT; }
-[ \t\n]   { /* skip */ }
+[a-zA-Z]+ { if(defCheck==1){defCheck=2;} yylval.lexeme = std::string(yytext); return TIDENT; }
+[ \t\n]   { /* skip */ if(defCheck==2){defCheck=0; return TEQUAL;} }
 .         { yyerror("unknown char"); }
 
 %%
