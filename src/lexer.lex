@@ -8,12 +8,12 @@ extern int yyerror(std::string msg);
 
 %}
 
-%x COMMENT
+%x MULTICOMMENT
 
 %%
-\/\*           { BEGIN(COMMENT); }
-<COMMENT>[^*]*  { /* Removing Multiline Comments */ }
-<COMMENT>\*\/    { BEGIN(INITIAL); }
+\/\*                     { BEGIN(MULTICOMMENT); }
+<MULTICOMMENT>[^*]*      { /* Removing Multiline Comments */ }
+<MULTICOMMENT>\*\/       { BEGIN(INITIAL); }
 
 "//".* { /*This is a single line comment */ }
 "+"       { return TPLUS; }
