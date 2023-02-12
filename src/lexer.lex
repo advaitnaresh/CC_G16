@@ -5,15 +5,15 @@
 #include <string>
 
 extern int yyerror(std::string msg);
-int comment=0;
+
 %}
 
 %x COMMENT
 
 %%
-\/\*           { comment = 1; BEGIN(COMMENT); }
-<COMMENT>[^*]*  {}
-<COMMENT>\*\/    { comment = 0; BEGIN(INITIAL); }
+\/\*           { BEGIN(COMMENT); }
+<COMMENT>[^*]*  { /* Removing Multiline Comments */ }
+<COMMENT>\*\/    { BEGIN(INITIAL); }
 
 "//".* { printf("Bro its a comment"); }
 "+"       { return TPLUS; }
