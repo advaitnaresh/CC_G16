@@ -12,6 +12,7 @@
     string recent;
     int defCheck=0;
     int undefCheck = 0;
+    int ignore_newline = 0;
     extern int yyerror(std::string msg);
     string debug;
     string defstr;
@@ -37,18 +38,35 @@
                                     }
                                     else if(defCheck == 3){
                                         defstr = defstr + std::string(yytext);
-                                        defstr = defstr + " ";
                                         defines[recent] = defstr;
                                     }
                                     }
-<MACRODEF>" "            {debug = string(yytext); if(defCheck == 2){defCheck = 3;}}
-<MACRODEF>[a-zA-Z0-9+-/*]+         {debug = string(yytext); 
+<MACRODEF>" "           {debug = string(yytext); 
+                        if(defCheck == 2){defCheck = 3;}
+                        else if(defCheck == 3){defstr = defstr + " ";}}
+<MACRODEF>";"           {debug = string(yytext); 
+                        defstr = defstr + ";";}
+<MACRODEF>"\\"           {ignore_newline = 1;}
+<MACRODEF>[a-zA-Z0-9+-/=*]+         {debug = string(yytext); 
                                     if(defCheck == 3){
                                         defstr = defstr + std::string(yytext);
-                                        defstr = defstr + " ";
                                         defines[recent] = defstr;
                                     }}
-<MACRODEF>[\n]           {debug = string(yytext); if(defCheck == 2){defCheck = 0; defines[recent] = "1";BEGIN(INITIAL);}else{defCheck = 0; BEGIN(INITIAL);}}
+<MACRODEF>[\n]           {if(ignore_newline == 0){
+                                debug = string(yytext); 
+                                if(defCheck == 2){
+                                    defCheck = 0; 
+                                    defines[recent] = "1";
+                                    BEGIN(INITIAL);
+                                }
+                                else{
+                                    defCheck = 0;
+                                    BEGIN(INITIAL);
+                                    }}
+                            else{
+                                ignore_newline = 0;
+                            }
+                            }
 
 "#undef"  { undefCheck = 1;}
 "//".* { /*This is a single line comment */ }
