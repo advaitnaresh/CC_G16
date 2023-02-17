@@ -35,6 +35,23 @@ dbg ABC;
 #def ABC 2
 #undef ABC
 dbg ABC; */
+
+/* Case 7: */
+#def DEBUG 10
+let y = 5;
+#ifdef DEBUG
+dbg y;
+#endif
+
+/* Case 8: */   
+// Doesnt display anything
+#def DEBUG 10
+let m = 50;
+#ifdef DEBUGtwo
+dbg m;          
+#endif
+
+
 // Successfully Giving an error
 
 /*This should print the following
@@ -51,5 +68,9 @@ dbg ABC; */
 15
 
 error
+
+5 
+
+Nothing displayed
 
 */

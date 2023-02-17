@@ -13,6 +13,8 @@
     int defCheck=0;
     int undefCheck = 0;
     int ignore_newline = 0;
+    int ifdef_checker=0;
+    int tempvar=0;
     extern int yyerror(std::string msg);
     string debug;
     string defstr;
@@ -21,6 +23,8 @@
 
 %x MULTICOMMENT
 %x MACRODEF
+%x IFDEF
+%x IGNORER
 %option noyywrap
 
 %%
@@ -29,8 +33,29 @@
 <MULTICOMMENT>[^*]*      { /* Removing Multiline Comments */ }
 <MULTICOMMENT>\*\/       { BEGIN(INITIAL); }
 
+<IGNORER>"#endif"        {if(tempvar==1){tempvar=0; BEGIN(INITIAL);}}
+<IGNORER>[^*]*           {/* IGNORING THE VALUES */}
 
+"#ifdef"                 {ifdef_checker = 1; BEGIN(IFDEF); }                
+
+<IFDEF>"#endif"          {ifdef_checker = 0; tempvar = 0; BEGIN(INITIAL);}
+<IFDEF>[a-zA-Z]+         {  if(tempvar == 0){
+                                debug = string(yytext); 
+                                if(defines.count(std::string(yytext))){
+                                    BEGIN(INITIAL);
+                                }
+                                else{
+                                    tempvar =1;
+                                    BEGIN(IGNORER);
+                                }
+                            }
+                        }
+
+<IFDEF>.                {/*ignore any character*/}
+                  
+"#endif"    {ifdef_checker = 0; tempvar = 0;}
 "#def"    { defCheck =1; defstr =""; BEGIN(MACRODEF); }
+
 <MACRODEF>[a-zA-Z]+      {debug = string(yytext); 
                                     if(defCheck == 1){
                                         defCheck = 2; 
@@ -121,8 +146,8 @@ std::string token_to_string(int token, const char *lexeme) {
         case TIDENT: s = "TIDENT"; s.append("  ").append(lexeme); break;
     }
 
-    int len = debug.length();
-    /* for (int i = 0; i < len; i++)
+    /*int len = debug.length();
+    for (int i = 0; i < len; i++)
         printf("%d ", debug[i]); */
 
     s.append(" ++ ").append(debug);
