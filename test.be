@@ -4,8 +4,8 @@
 lab1*/
 
 //Case 1:
-#def TEN 10
-dbg TEN+TEN;
+#def _abc69 10
+dbg _abc69;
 
 //Case 2:
 #def STATEMENTS let a = 5; \

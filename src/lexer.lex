@@ -54,7 +54,7 @@
 <IFDEF>.                {/*ignore any character*/}
 
 
-<MACRODEF>[a-zA-Z]+      {debug = string(yytext); 
+<MACRODEF>[a-zA-Z_][a-zA-Z0-9_]*      {debug = string(yytext); 
                                     if(defCheck == 1){
                                         defCheck = 2; 
                                         recent = std::string(yytext);
@@ -109,7 +109,7 @@
 "dbg"           { return TDBG; }
 "let"           { return TLET; }
 [0-9]+    {yylval.lexeme = std::string(yytext); return TINT_LIT; }
-[a-zA-Z]+ { 
+[a-zA-Z_][a-zA-Z0-9_]* { 
     debug = string(yytext);
         if(undefCheck == 1){
             undefCheck = 0; defines.erase(std::string(yytext));} 
