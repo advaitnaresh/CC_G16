@@ -65,8 +65,8 @@ dbg 2*xerr;
 #def DEBUG 10
 let xin = 5;
 #undef DEBUG
-#ifdef DEBUG
-dbg xin;
+#ifdef _12bruh
+dbg _12bruh;
 #endif
 
 

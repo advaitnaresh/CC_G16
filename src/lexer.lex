@@ -39,7 +39,7 @@
 
 
 <IFDEF>"#endif"          {tempvar = 0; BEGIN(INITIAL);}
-<IFDEF>[a-zA-Z]+         {  if(tempvar == 0){
+<IFDEF>[a-zA-Z_][a-zA-Z0-9_]* {  if(tempvar == 0){
                                 debug = string(yytext); 
                                 if(defines.count(std::string(yytext))){
                                     tempvar =1;
