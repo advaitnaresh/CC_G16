@@ -51,6 +51,24 @@ let m = 50;
 dbg m;          
 #endif
 
+/*Case 9: */
+let xerr=20;
+#ifdef DEBUGll
+dbg xerr;
+#elif DEBUG
+
+dbg 2*xerr;
+#endif
+
+
+/* Case 10: */
+#def DEBUG 10
+let xin = 5;
+#undef DEBUG
+#ifdef DEBUG
+dbg xin;
+#endif
+
 
 // Successfully Giving an error
 
@@ -70,6 +88,10 @@ dbg m;
 error
 
 5 
+
+Nothing displayed
+
+40
 
 Nothing displayed
 

@@ -13,7 +13,6 @@
     int defCheck=0;
     int undefCheck = 0;
     int ignore_newline = 0;
-    int ifdef_checker=0;
     int tempvar=0;
     extern int yyerror(std::string msg);
     string debug;
@@ -33,28 +32,27 @@
 <MULTICOMMENT>[^*]*      { /* Removing Multiline Comments */ }
 <MULTICOMMENT>\*\/       { BEGIN(INITIAL); }
 
-<IGNORER>"#endif"        {if(tempvar==1){tempvar=0; BEGIN(INITIAL);}}
-<IGNORER>[^*]*           {/* IGNORING THE VALUES */}
+<IGNORER>"#elif"        {if(tempvar==0){BEGIN(IFDEF);}}
+<IGNORER>"#endif"       {tempvar=0; BEGIN(INITIAL);}
+<IGNORER>"else"         {tempvar=0; BEGIN(INITIAL);}
+<IGNORER>.              {/*ignore this*/}
 
-"#ifdef"                 {ifdef_checker = 1; BEGIN(IFDEF); }                
 
-<IFDEF>"#endif"          {ifdef_checker = 0; tempvar = 0; BEGIN(INITIAL);}
+<IFDEF>"#endif"          {tempvar = 0; BEGIN(INITIAL);}
 <IFDEF>[a-zA-Z]+         {  if(tempvar == 0){
                                 debug = string(yytext); 
                                 if(defines.count(std::string(yytext))){
+                                    tempvar =1;
                                     BEGIN(INITIAL);
                                 }
                                 else{
-                                    tempvar =1;
                                     BEGIN(IGNORER);
                                 }
                             }
                         }
 
 <IFDEF>.                {/*ignore any character*/}
-                  
-"#endif"    {ifdef_checker = 0; tempvar = 0;}
-"#def"    { defCheck =1; defstr =""; BEGIN(MACRODEF); }
+
 
 <MACRODEF>[a-zA-Z]+      {debug = string(yytext); 
                                     if(defCheck == 1){
@@ -93,18 +91,23 @@
                             }
                             }
 
-"#undef"  { undefCheck = 1;}
-"//".* { /*This is a single line comment */ }
-"+"       { return TPLUS; }
-"-"       { return TDASH; }
-"*"       { return TSTAR; }
-"/"       { return TSLASH; }
-";"       { {return TSCOL;}}
-"("       { return TLPAREN; }
-")"       { return TRPAREN; }
-"="       { return TEQUAL; }
-"dbg"     { return TDBG; }
-"let"     { return TLET; }
+"#ifdef"        {BEGIN(IFDEF); }                
+"#elif"         {BEGIN(IGNORER);}
+"#else"         {BEGIN(IGNORER);}
+"#endif"        {tempvar = 0;}
+"#def"          {defCheck =1; defstr =""; BEGIN(MACRODEF); }
+"#undef"        {undefCheck = 1;}
+"//".*          {/*This is a single line comment */ }
+"+"             { return TPLUS; }
+"-"             { return TDASH; }
+"*"             { return TSTAR; }
+"/"             { return TSLASH; }
+";"             { {return TSCOL;}}
+"("             { return TLPAREN; }
+")"             { return TRPAREN; }
+"="             { return TEQUAL; }
+"dbg"           { return TDBG; }
+"let"           { return TLET; }
 [0-9]+    {yylval.lexeme = std::string(yytext); return TINT_LIT; }
 [a-zA-Z]+ { 
     debug = string(yytext);
