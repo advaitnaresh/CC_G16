@@ -34,7 +34,7 @@
 
 <IGNORER>"#elif"        {if(tempvar==0){BEGIN(IFDEF);}}
 <IGNORER>"#endif"       {tempvar=0; BEGIN(INITIAL);}
-<IGNORER>"else"         {tempvar=0; BEGIN(INITIAL);}
+<IGNORER>"#else"        {if(tempvar==0);{BEGIN(INITIAL);}}
 <IGNORER>.              {/*ignore this*/}
 
 
