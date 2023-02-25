@@ -91,4 +91,13 @@ struct NodeIdent : public Node {
     llvm::Value *llvm_codegen(LLVMCompiler *compiler);
 };
 
+struct NodeAssign : public Node {
+    std::string identifier;
+    Node *expression;
+
+    NodeAssign(std::string id, Node *expr);
+    std::string to_string();
+    llvm::Value *llvm_codegen(LLVMCompiler *compiler);
+};
+
 #endif

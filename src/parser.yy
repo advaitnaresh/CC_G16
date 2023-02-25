@@ -68,7 +68,7 @@ Stmt : TLET TIDENT TEQUAL Expr
      | TIDENT TEQUAL Expr
      {
         if(symbol_table.contains($1)){
-            $$ = new NodeDecl($1,$3);
+            $$ = new NodeAssign($1,$3);
         }else{
             yyerror("using undefined variable.\n");
         }

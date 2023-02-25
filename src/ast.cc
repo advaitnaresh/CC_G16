@@ -78,3 +78,14 @@ NodeIdent::NodeIdent(std::string ident) {
 std::string NodeIdent::to_string() {
     return identifier;
 }
+
+
+NodeAssign::NodeAssign(std::string id, Node *expr) {
+    type = ASSN;
+    identifier = id;
+    expression = expr;
+}
+
+std::string NodeAssign::to_string() {
+    return "(assign " + identifier + " " + expression->to_string() + ")";
+}
