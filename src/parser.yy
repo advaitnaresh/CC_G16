@@ -25,7 +25,7 @@ int yyerror(std::string msg);
 
 }
 
-%token TPLUS TDASH TSTAR TSLASH
+%token TQN TCOL TPLUS TDASH TSTAR TSLASH
 %token <lexeme> TINT_LIT TIDENT
 %token INT TLET TDBG
 %token TSCOL TLPAREN TRPAREN TEQUAL
@@ -92,6 +92,10 @@ Expr : TINT_LIT
      { $$ = new NodeBinOp(NodeBinOp::MULT, $1, $3); }
      | Expr TSLASH Expr
      { $$ = new NodeBinOp(NodeBinOp::DIV, $1, $3); }
+     | Expr TQN Expr TCOL Expr
+     {
+        
+     } 
      | TLPAREN Expr TRPAREN { $$ = $2; }
      ;
 
