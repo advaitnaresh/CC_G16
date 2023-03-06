@@ -93,9 +93,7 @@ Expr : TINT_LIT
      | Expr TSLASH Expr
      { $$ = new NodeBinOp(NodeBinOp::DIV, $1, $3); }
      | Expr TQN Expr TCOL Expr
-     {
-        
-     } 
+     { $$ = new NodeTernary($1, $3, $5); } 
      | TLPAREN Expr TRPAREN { $$ = $2; }
      ;
 

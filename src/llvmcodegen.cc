@@ -159,4 +159,8 @@ Value *NodeAssign::llvm_codegen(LLVMCompiler *compiler) {
     return compiler->builder.CreateStore(expr, alloc);
 }
 
+Value *NodeTernary::llvm_codegen(LLVMCompiler *compiler){
+    return nullptr;
+}
+
 #undef MAIN_FUNC

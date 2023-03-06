@@ -89,3 +89,14 @@ NodeAssign::NodeAssign(std::string id, Node *expr) {
 std::string NodeAssign::to_string() {
     return "(assign " + identifier + " " + expression->to_string() + ")";
 }
+
+NodeTernary::NodeTernary(Node *conditionExpr, Node *trueExpr, Node *falseExpr) {
+    type = TERN;
+    conditionExpression = conditionExpr;
+    trueExpression = trueExpr;
+    falseExpression = falseExpr;
+}
+
+std::string NodeTernary::to_string() {
+    return "(?: " + conditionExpression->to_string() + " " + trueExpression->to_string() + " " + falseExpression->to_string() + ")";
+}

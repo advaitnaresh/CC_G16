@@ -70,7 +70,7 @@
 <MACRODEF>";"           {debug = string(yytext); 
                         defstr = defstr + ";";}
 <MACRODEF>"\\"           {ignore_newline = 1;}
-<MACRODEF>[a-zA-Z0-9+-/=*]+         {debug = string(yytext); 
+<MACRODEF>[a-zA-Z0-9+-/=*?:]+         {debug = string(yytext); 
                                     if(defCheck == 3){
                                         defstr = defstr + std::string(yytext);
                                         defines[recent] = defstr;
@@ -106,6 +106,8 @@
 "("             { return TLPAREN; }
 ")"             { return TRPAREN; }
 "="             { return TEQUAL; }
+"?"             { return TQN; }
+":"             { return TCOL; }
 "dbg"           { return TDBG; }
 "let"           { return TLET; }
 [0-9]+    {yylval.lexeme = std::string(yytext); return TINT_LIT; }
@@ -141,6 +143,8 @@ std::string token_to_string(int token, const char *lexeme) {
         case TLPAREN: s = "TLPAREN"; break;
         case TRPAREN: s = "TRPAREN"; break;
         case TEQUAL: s = "TEQUAL"; break;
+        case TQN: s = "TQN"; break;
+        case TCOL: s = "TCOL"; break;
         
         case TDBG: s = "TDBG"; break;
         case TLET: s = "TLET"; break;
