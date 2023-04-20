@@ -24,7 +24,7 @@ SymbolTable symbol_table;
 int yyerror(std::string msg);
 
 }
-
+%token TIF TELSE TLBRACE TRBRACE
 %token TQN TCOL TPLUS TDASH TSTAR TSLASH
 %token <lexeme> TINT_LIT TIDENT
 %token INT TLET TDBG
@@ -72,6 +72,10 @@ Stmt : TLET TIDENT TEQUAL Expr
         }else{
             yyerror("using undefined variable.\n");
         }
+     }
+     | TIF Expr TLBRACE Stmt TRBRACE TELSE TLBRACE Stmt TRBRACE
+     {
+        $$ = new NodeIfElse($2, $4, $8);
      }
      ;
 

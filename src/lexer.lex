@@ -110,6 +110,11 @@
 ":"             { return TCOL; }
 "dbg"           { return TDBG; }
 "let"           { return TLET; }
+"if"            { return TIF; }
+"else"          { return TELSE; }
+"{"            { return TLBRACE; }
+"}"            { return TRBRACE; }
+
 [0-9]+    {yylval.lexeme = std::string(yytext); return TINT_LIT; }
 [a-zA-Z_][a-zA-Z0-9_]* { 
     debug = string(yytext);
@@ -151,13 +156,17 @@ std::string token_to_string(int token, const char *lexeme) {
         
         case TINT_LIT: s = "TINT_LIT"; s.append("  ").append(lexeme); break;
         case TIDENT: s = "TIDENT"; s.append("  ").append(lexeme); break;
+        case TIF: s = "TIF"; break;
+        case TELSE: s = "TELSE"; break;
+        case TLBRACE: s = "TLBRACE"; break;
+        case TRBRACE: s = "TRBRACE"; break;
+        
     }
 
     /*int len = debug.length();
     for (int i = 0; i < len; i++)
         printf("%d ", debug[i]); */
 
-    s.append(" ++ ").append(debug);
 
     return s;
 }
