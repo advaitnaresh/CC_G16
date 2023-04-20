@@ -134,7 +134,9 @@ Value *NodeDecl::llvm_codegen(LLVMCompiler *compiler) {
 
     compiler->locals[identifier] = alloc;
 
-    return compiler->builder.CreateStore(expr, alloc);
+    compiler->builder.CreateStore(expr, alloc);
+
+    return expr;
 }
 
 Value *NodeIdent::llvm_codegen(LLVMCompiler *compiler) {
@@ -152,11 +154,14 @@ Value *NodeAssign::llvm_codegen(LLVMCompiler *compiler) {
         MAIN_FUNC->getEntryBlock().begin()
     );
 
-    AllocaInst *alloc = temp_builder.CreateAlloca(compiler->builder.getInt32Ty(), 0, identifier);
+    //assign to variable
+    AllocaInst *alloc = compiler->locals[identifier];
 
     compiler->locals[identifier] = alloc;
 
-    return compiler->builder.CreateStore(expr, alloc);
+    compiler->builder.CreateStore(expr, alloc);
+
+    return expr;
 }
 
 Value *NodeTernary::llvm_codegen(LLVMCompiler *compiler){

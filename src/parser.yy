@@ -73,7 +73,7 @@ Stmt : TLET TIDENT TEQUAL Expr
             yyerror("using undefined variable.\n");
         }
      }
-     | TIF Expr TLBRACE Stmt TRBRACE TELSE TLBRACE Stmt TRBRACE
+     | TIF Expr TLBRACE StmtList TRBRACE TELSE TLBRACE StmtList TRBRACE
      {
         $$ = new NodeIfElse($2, $4, $8);
      }
