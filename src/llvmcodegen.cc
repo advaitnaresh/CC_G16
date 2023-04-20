@@ -180,9 +180,10 @@ Value *NodeTernary::llvm_codegen(LLVMCompiler *compiler){
 Value *NodeIfElse::llvm_codegen(LLVMCompiler *compiler) {
     Value *cond = conditionExpression->llvm_codegen(compiler);
 
+    //convert cond to a bool by comparing equal to 0.0
     cond = compiler->builder.CreateICmpNE(
         cond,
-        compiler->builder.getInt1(0),
+        compiler->builder.getInt32(0),
         "ifcond"
     );
 

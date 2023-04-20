@@ -40,17 +40,17 @@ int yyerror(std::string msg);
 
 Program :                
         { final_values = nullptr; }
-        | StmtList TSCOL 
+        | StmtList 
         { final_values = $1; }
 	    ;
 
 StmtList : Stmt                
          { $$ = new NodeStmts(); $$->push_back($1); }
-	     | StmtList TSCOL Stmt 
-         { $$->push_back($3); }
+	     | StmtList Stmt 
+         { $$->push_back($2); }
 	     ;
 
-Stmt : TLET TIDENT TEQUAL Expr
+Stmt : TLET TIDENT TEQUAL Expr TSCOL
      {
         if(symbol_table.contains($2)) {
             // tried to redeclare variable, so error
@@ -61,11 +61,11 @@ Stmt : TLET TIDENT TEQUAL Expr
             $$ = new NodeDecl($2, $4);
         }
      }
-     | TDBG Expr
+     | TDBG Expr TSCOL
      { 
         $$ = new NodeDebug($2);
      }
-     | TIDENT TEQUAL Expr
+     | TIDENT TEQUAL Expr TSCOL
      {
         if(symbol_table.contains($1)){
             $$ = new NodeAssign($1,$3);
