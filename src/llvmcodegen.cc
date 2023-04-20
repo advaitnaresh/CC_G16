@@ -134,7 +134,9 @@ Value *NodeDecl::llvm_codegen(LLVMCompiler *compiler) {
 
     compiler->locals[identifier] = alloc;
 
-    return compiler->builder.CreateStore(expr, alloc);
+    compiler->builder.CreateStore(expr, alloc);
+
+    return expr;
 }
 
 Value *NodeIdent::llvm_codegen(LLVMCompiler *compiler) {
@@ -142,6 +144,86 @@ Value *NodeIdent::llvm_codegen(LLVMCompiler *compiler) {
 
     // if your LLVM_MAJOR_VERSION >= 14
     return compiler->builder.CreateLoad(compiler->builder.getInt32Ty(), alloc, identifier);
+}
+
+Value *NodeAssign::llvm_codegen(LLVMCompiler *compiler) {
+     Value *expr = expression->llvm_codegen(compiler);
+
+    IRBuilder<> temp_builder(
+        &MAIN_FUNC->getEntryBlock(),
+        MAIN_FUNC->getEntryBlock().begin()
+    );
+
+    //assign to variable
+    AllocaInst *alloc = compiler->locals[identifier];
+
+    compiler->locals[identifier] = alloc;
+
+    compiler->builder.CreateStore(expr, alloc);
+
+    return expr;
+}
+
+Value *NodeTernary::llvm_codegen(LLVMCompiler *compiler){
+    Value *cond = conditionExpression->llvm_codegen(compiler);
+    Value *truExpr = trueExpression->llvm_codegen(compiler);
+    Value *falExpr = falseExpression->llvm_codegen(compiler);
+
+    IRBuilder<> temp_builder(
+        &MAIN_FUNC->getEntryBlock(),
+        MAIN_FUNC->getEntryBlock().begin()
+    );
+
+    return compiler->builder.CreateSelect(cond, truExpr, falExpr);
+    // return nullptr;
+}
+Value *NodeIfElse::llvm_codegen(LLVMCompiler *compiler) {
+    Value *cond = conditionExpression->llvm_codegen(compiler);
+
+    cond = compiler->builder.CreateICmpNE(
+        cond,
+        compiler->builder.getInt1(0),
+        "ifcond"
+    );
+
+    Function *function = compiler->builder.GetInsertBlock()->getParent();
+
+    BasicBlock *then_bb = BasicBlock::Create(*compiler->context, "ifBB", function);
+    BasicBlock *else_bb = BasicBlock::Create(*compiler->context, "elseBB", function);
+    BasicBlock *merge_bb = BasicBlock::Create(*compiler->context, "mergeBB", function);
+
+    // if the condition is true, jump to the then block, else jump to the else block
+    compiler->builder.CreateCondBr(cond, then_bb, else_bb);
+
+    // then block
+    compiler->builder.SetInsertPoint(then_bb);
+    Value *then_value = trueExpression->llvm_codegen(compiler);
+    compiler->builder.CreateBr(merge_bb);
+
+    then_bb = compiler->builder.GetInsertBlock();
+
+    // else block
+    // function->insert(function->end(), else_bb);
+    
+    compiler->builder.SetInsertPoint(else_bb);
+    Value *else_value = falseExpression->llvm_codegen(compiler);
+    compiler->builder.CreateBr(merge_bb);
+
+    else_bb = compiler->builder.GetInsertBlock();
+
+    // // merge block
+    // function->insert(function->end(), merge_bb);
+    compiler->builder.SetInsertPoint(merge_bb);
+
+    // `getType() == V->getType() && "All operands to PHI node must be the same type as the PHI node!
+    // PHINode to execute between then and else blocks based on condition with any type
+    PHINode *phi_node = compiler->builder.CreatePHI(then_value->getType(), 2, "ifelse");
+    phi_node->addIncoming(then_value, then_bb);
+    phi_node->addIncoming(else_value, else_bb);
+
+
+    return phi_node;
+    // return nullptr;
 }
 
 #undef MAIN_FUNC
