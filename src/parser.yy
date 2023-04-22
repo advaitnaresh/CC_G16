@@ -26,7 +26,7 @@ int yyerror(std::string msg);
 }
 %token TIF TELSE TLBRACE TRBRACE
 %token TQN TCOL TPLUS TDASH TSTAR TSLASH
-%token <lexeme> TINT_LIT TIDENT
+%token <lexeme> TINT_LIT TIDENT TTYPE
 %token INT TLET TDBG
 %token TSCOL TLPAREN TRPAREN TEQUAL
 
@@ -50,7 +50,7 @@ StmtList : Stmt
          { $$->push_back($2); }
 	     ;
 
-Stmt : TLET TIDENT TEQUAL Expr TSCOL
+Stmt : TLET TIDENT TCOL TTYPE TEQUAL Expr TSCOL
      {
         if(symbol_table.contains($2)) {
             // tried to redeclare variable, so error
@@ -58,7 +58,7 @@ Stmt : TLET TIDENT TEQUAL Expr TSCOL
         } else {
             symbol_table.insert($2);
 
-            $$ = new NodeDecl($2, $4);
+            $$ = new NodeDecl($2, $4, $6);
         }
      }
      | TDBG Expr TSCOL
@@ -80,7 +80,7 @@ Stmt : TLET TIDENT TEQUAL Expr TSCOL
      ;
 
 Expr : TINT_LIT               
-     { $$ = new NodeInt(stoi($1)); }
+     { $$ = new NodeInt(stol($1)); }
      | TIDENT
      { 
         if(symbol_table.contains($1))

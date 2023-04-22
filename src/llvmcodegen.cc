@@ -11,6 +11,7 @@
 #include <llvm/IR/GlobalValue.h>
 #include <llvm/IR/Verifier.h>
 #include <llvm/Bitcode/BitcodeWriter.h>
+#include "llvm/Support/Debug.h"
 #include <vector>
 
 #define MAIN_FUNC compiler->module.getFunction("main")
@@ -97,7 +98,7 @@ Value *NodeDebug::llvm_codegen(LLVMCompiler *compiler) {
 
     Function *printi_func = compiler->module.getFunction("printi");
     compiler->builder.CreateCall(printi_func, {expr});
-
+    // DEBUG_WITH_TYPE("llvm_codegen", dbgs() << "Debug: << expression->to_string() << ");
     return expr;
 }
 

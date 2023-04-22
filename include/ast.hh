@@ -15,6 +15,10 @@ struct Node {
         BIN_OP, INT_LIT, STMTS, ASSN, DBG, IDENT, TERN, IF_ELSE 
     } type;
 
+    enum DataType {
+        INT, SHORT, LONG
+    } data_type;
+
     virtual std::string to_string() = 0;
     virtual llvm::Value *llvm_codegen(LLVMCompiler *compiler) = 0;
     virtual ~Node() {}
@@ -52,9 +56,9 @@ struct NodeBinOp : public Node {
     Node for integer literals
 */
 struct NodeInt : public Node {
-    int value;
+    long value;
 
-    NodeInt(int val);
+    NodeInt(long val);
     std::string to_string();
     llvm::Value *llvm_codegen(LLVMCompiler *compiler);
 };
@@ -66,7 +70,7 @@ struct NodeDecl : public Node {
     std::string identifier;
     Node *expression;
 
-    NodeDecl(std::string id, Node *expr);
+    NodeDecl(std::string id, std::string dataType, Node *expr);
     std::string to_string();
     llvm::Value *llvm_codegen(LLVMCompiler *compiler);
 };

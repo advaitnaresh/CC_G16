@@ -1,13 +1,25 @@
 #include "ast.hh"
 
 #include <string>
+#include<iostream>
 #include <vector>
+
 
 NodeBinOp::NodeBinOp(NodeBinOp::Op ope, Node *leftptr, Node *rightptr) {
     type = BIN_OP;
     op = ope;
     left = leftptr;
     right = rightptr;
+
+    if(leftptr->data_type == LONG && rightptr->data_type == LONG){
+        data_type = LONG;
+    }
+    else if(leftptr->data_type == INT && rightptr->data_type == INT){
+        data_type = INT;
+    }
+    else if(leftptr->data_type == SHORT && rightptr->data_type == SHORT){
+        data_type = SHORT;
+    }
 }
 
 std::string NodeBinOp::to_string() {
@@ -24,9 +36,18 @@ std::string NodeBinOp::to_string() {
     return out;
 }
 
-NodeInt::NodeInt(int val) {
+NodeInt::NodeInt(long val) {
     type = INT_LIT;
     value = val;
+    if(val <= 65535){
+        data_type = SHORT;
+    }
+    else if(val <= 2147483647){
+        data_type = INT;
+    }
+    else{
+        data_type = LONG;
+    }
 }
 
 std::string NodeInt::to_string() {
@@ -53,10 +74,32 @@ std::string NodeStmts::to_string() {
     return out;
 }
 
-NodeDecl::NodeDecl(std::string id, Node *expr) {
+NodeDecl::NodeDecl(std::string id,std::string dataType, Node *expr) {
     type = ASSN;
     identifier = id;
     expression = expr;
+    if(dataType == "int"){
+        data_type = INT;
+    }
+    else if(dataType == "short"){
+        data_type = SHORT;
+    }
+    else if(dataType == "long"){
+        data_type = LONG;
+    }
+
+    if((expr->data_type == LONG && this->data_type == INT)){
+        std::cerr << "Error: Cannot assign long to integer" << std::endl;
+        exit(1);
+    }
+    else if((expr->data_type == LONG && this->data_type == SHORT)){
+        std::cerr << "Error: Cannot assign long to short" << std::endl;
+        exit(1);
+    }
+    else if((expr->data_type == INT && this->data_type == SHORT)){
+        std::cerr << "Error: Cannot assign integer to short" << std::endl;
+        exit(1);
+    }
 }
 
 std::string NodeDecl::to_string() {
@@ -66,6 +109,7 @@ std::string NodeDecl::to_string() {
 NodeDebug::NodeDebug(Node *expr) {
     type = DBG;
     expression = expr;
+    this->data_type = expr->data_type;
 }
 
 std::string NodeDebug::to_string() {
@@ -84,6 +128,10 @@ NodeAssign::NodeAssign(std::string id, Node *expr) {
     type = ASSN;
     identifier = id;
     expression = expr;
+    if((expr->data_type == LONG && this->data_type != LONG) || (expr->data_type == INT && this->data_type == SHORT)){
+        std::cout << "Error: Cannot assign " << expr->data_type << " to " << this->data_type << std::endl;
+        exit(1);
+    }
 }
 
 std::string NodeAssign::to_string() {

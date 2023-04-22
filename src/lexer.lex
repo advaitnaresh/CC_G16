@@ -114,6 +114,9 @@
 "else"          { return TELSE; }
 "{"            { return TLBRACE; }
 "}"            { return TRBRACE; }
+"int"           { return TTYPE; }
+"short"         {yylval.lexeme = std::string(yytext); return TTYPE; }
+"long"          {yylval.lexeme = std::string(yytext); return TTYPE; }
 
 [0-9]+    {yylval.lexeme = std::string(yytext); return TINT_LIT; }
 [a-zA-Z_][a-zA-Z0-9_]* { 
@@ -160,6 +163,7 @@ std::string token_to_string(int token, const char *lexeme) {
         case TELSE: s = "TELSE"; break;
         case TLBRACE: s = "TLBRACE"; break;
         case TRBRACE: s = "TRBRACE"; break;
+        case TTYPE: s = "TTYPE"; s.append("  ").append(lexeme); break;
         
     }
 

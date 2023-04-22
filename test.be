@@ -1,8 +1,10 @@
-let a=0;
-let b=2;
+let a : int = 33333;
+let b : short = 42222;
 
-if 0 {dbg a+b; a = 4;} else {dbg b-a; b = 4;}
-
-if a+b {dbg a+b; a = 4;} else {dbg b-a; b = 4;}
-
-dbg a;
+if(b){
+let c : int = 2;
+dbg c;}
+else{
+let d : int = 3;
+dbg c;}
+dbg a+b*2;

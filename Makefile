@@ -4,7 +4,7 @@ LEXER:= $(wildcard src/*.lex)
 LEXER_OUT:=$(patsubst src/%.lex,src/%.cc,$(LEXER))
 PARSER:= parser
 
-FLAGS:= -Wall -Wextra -Wno-unused-function -Wno-unused-parameter -Iinclude -std=c++17
+FLAGS:= -Wall -Wextra -Wno-unused-function -Wno-unused-parameter -Iinclude -std=c++17 
 LLVMFLAGS:= `llvm-config --cxxflags`
 LLVMLIB:= `llvm-config --ldflags --system-libs --libs core`
 
