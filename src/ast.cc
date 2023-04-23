@@ -4,6 +4,14 @@
 #include<iostream>
 #include <vector>
 
+bool is_int(std::string s){
+    for(unsigned long i = 0; i < s.length(); i++){
+        if(!isdigit(s[i])){
+            return false;
+        }
+    }
+    return true;
+}
 
 NodeBinOp::NodeBinOp(NodeBinOp::Op ope, Node *leftptr, Node *rightptr) {
     type = BIN_OP;
@@ -33,13 +41,21 @@ std::string NodeBinOp::to_string() {
 
     out += ' ' + left->to_string() + ' ' + right->to_string() + ')';
 
+    if(is_int(left->to_string()) && is_int(right->to_string())){
+        switch(op) {
+            case PLUS: out = std::to_string(std::stoi(left->to_string()) + std::stoi(right->to_string())); break;
+            case MINUS: out = std::to_string(std::stoi(left->to_string()) - std::stoi(right->to_string())); break;
+            case MULT: out = std::to_string(std::stoi(left->to_string()) * std::stoi(right->to_string())); break;
+            case DIV: out = std::to_string(std::stoi(left->to_string()) / std::stoi(right->to_string())); break;
+        }
+    }
     return out;
 }
 
-NodeInt::NodeInt(long val) {
+NodeInt::NodeInt(long long val) {
     type = INT_LIT;
     value = val;
-    if(val <= 65535){
+    if(val <= 32767){
         data_type = SHORT;
     }
     else if(val <= 2147483647){
@@ -165,6 +181,20 @@ NodeIfElse::NodeIfElse(Node *conditionExpr, Node *trueExpr, Node *falseExpr) {
     falseExpression = falseExpr;
 }
 
+std::string remove_begin(std::string str){
+    std::string out = "";
+    for(unsigned long i = 7; i < str.length() - 1; i++){
+        out += str[i];
+    }
+    return out;
+}
+
 std::string NodeIfElse::to_string() {
-    return "(if-else " + conditionExpression->to_string() + " " + trueExpression->to_string() + " " + falseExpression->to_string() + ")";
+    // return "(if-else " + conditionExpression->to_string() + " " + remove_begin(trueExpression->to_string()) + " " + remove_begin(falseExpression->to_string()) + ")";
+    if(conditionExpression->to_string() == "1"){
+        return remove_begin(trueExpression->to_string());
+    }
+    else{
+        return remove_begin(falseExpression->to_string());
+    }
 }

@@ -56,9 +56,9 @@ struct NodeBinOp : public Node {
     Node for integer literals
 */
 struct NodeInt : public Node {
-    long value;
+    long long value;
 
-    NodeInt(long val);
+    NodeInt(long long val);
     std::string to_string();
     llvm::Value *llvm_codegen(LLVMCompiler *compiler);
 };

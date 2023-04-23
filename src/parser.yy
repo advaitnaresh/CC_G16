@@ -98,7 +98,7 @@ Rbrace : TRBRACE
 
 
 Expr : TINT_LIT               
-     { $$ = new NodeInt(stol($1)); }
+     { $$ = new NodeInt(stoll($1)); }
      | TIDENT
      { 
         if(symbol_table->contains($1))
