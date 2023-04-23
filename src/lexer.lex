@@ -112,8 +112,8 @@
 "let"           { return TLET; }
 "if"            { return TIF; }
 "else"          { return TELSE; }
-"{"            { return TLBRACE; }
-"}"            { return TRBRACE; }
+"{"            { yylval.lexeme = std::string(yytext);return TLBRACE; }
+"}"            { yylval.lexeme = std::string(yytext);return TRBRACE; }
 "int"           { return TTYPE; }
 "short"         {yylval.lexeme = std::string(yytext); return TTYPE; }
 "long"          {yylval.lexeme = std::string(yytext); return TTYPE; }

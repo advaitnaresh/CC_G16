@@ -10,6 +10,10 @@
 struct SymbolTable {
     std::set<std::string> table;
 
+    SymbolTable(){
+        parent = nullptr;
+    }
+    SymbolTable *parent;
     bool contains(std::string key);
     void insert(std::string key);
 };

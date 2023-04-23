@@ -19,7 +19,8 @@ extern int yyparse();
 
 extern NodeStmts* final_values;
 
-SymbolTable symbol_table;
+SymbolTable* symbol_table = new SymbolTable();
+// symbol_table->parent = nullptr;
 
 int yyerror(std::string msg);
 
@@ -30,7 +31,7 @@ int yyerror(std::string msg);
 %token INT TLET TDBG
 %token TSCOL TLPAREN TRPAREN TEQUAL
 
-%type <node> Expr Stmt
+%type <node> Expr Stmt Rbrace Lbrace
 %type <stmts> Program StmtList
 
 %left TPLUS TDASH
@@ -52,11 +53,11 @@ StmtList : Stmt
 
 Stmt : TLET TIDENT TCOL TTYPE TEQUAL Expr TSCOL
      {
-        if(symbol_table.contains($2)) {
+        if(symbol_table->contains($2)) {
             // tried to redeclare variable, so error
             yyerror("tried to redeclare variable.\n");
         } else {
-            symbol_table.insert($2);
+            symbol_table->insert($2);
 
             $$ = new NodeDecl($2, $4, $6);
         }
@@ -67,23 +68,40 @@ Stmt : TLET TIDENT TCOL TTYPE TEQUAL Expr TSCOL
      }
      | TIDENT TEQUAL Expr TSCOL
      {
-        if(symbol_table.contains($1)){
+        if(symbol_table->contains($1)){
             $$ = new NodeAssign($1,$3);
         }else{
             yyerror("using undefined variable.\n");
         }
      }
-     | TIF Expr TLBRACE StmtList TRBRACE TELSE TLBRACE StmtList TRBRACE
+     | TIF Expr Lbrace StmtList Rbrace TELSE Lbrace StmtList Rbrace
      {
         $$ = new NodeIfElse($2, $4, $8);
      }
      ;
 
+Lbrace : TLBRACE
+       {
+            struct SymbolTable* new_table = new SymbolTable();
+            new_table->parent = symbol_table;
+            symbol_table = new_table;
+            $$ = nullptr;
+        }
+       ;
+
+
+Rbrace : TRBRACE
+       {
+            symbol_table = symbol_table->parent;
+            $$ = nullptr;}
+       ;
+
+
 Expr : TINT_LIT               
      { $$ = new NodeInt(stol($1)); }
      | TIDENT
      { 
-        if(symbol_table.contains($1))
+        if(symbol_table->contains($1))
             $$ = new NodeIdent($1); 
         else
             yyerror("using undeclared variable.\n");
