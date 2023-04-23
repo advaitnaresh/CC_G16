@@ -103,7 +103,16 @@ NodeDecl::NodeDecl(std::string id,std::string dataType, Node *expr) {
 }
 
 std::string NodeDecl::to_string() {
-    return "(let " + identifier + " " + expression->to_string() + ")";
+    std::string out = "(let (" + identifier + " ";
+    switch(data_type) {
+        case SHORT: out += "short"; break;
+        case INT: out += "int"; break;
+        case LONG: out += "long"; break;
+    }
+
+    out +=") " + expression->to_string() + ")";
+
+    return out;
 }
 
 NodeDebug::NodeDebug(Node *expr) {
@@ -157,5 +166,5 @@ NodeIfElse::NodeIfElse(Node *conditionExpr, Node *trueExpr, Node *falseExpr) {
 }
 
 std::string NodeIfElse::to_string() {
-    return "(if " + conditionExpression->to_string() + " " + trueExpression->to_string() + " " + falseExpression->to_string() + ")";
+    return "(if-else " + conditionExpression->to_string() + " " + trueExpression->to_string() + " " + falseExpression->to_string() + ")";
 }
